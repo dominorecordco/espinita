@@ -137,9 +137,14 @@ module Espinita
 
 
     def audit_create
-      #puts self.class.audit_callbacks
+      audited_changes = if self.respond_to?(:saved_changes)
+        self.saved_changes.slice(*self.class.permitted_columns).symbolize_keys
+      else
+        audited_hash
+      end
+
       write_audit(:action => 'create',
-                  :audited_changes => audited_hash,
+                  :audited_changes => audited_changes,
                   :comment => audit_comment)
     end
 
